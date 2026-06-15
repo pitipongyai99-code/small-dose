@@ -460,50 +460,7 @@ function isHighAlert(name) {
     return list.some(k => ln.includes(k));
 }
 
-// Copy summary to clipboard with button animation
-function copyCalculationSummary() {
-    if (!selectedQuickDrug) {
-        showNotification("กรุณาเลือกรายการยาก่อนกดคัดลอก", "warning");
-        return;
-    }
-    
-    const weight = document.getElementById('quick-weight').value;
-    const orderedDose = document.getElementById('quick-dose').value;
-    const drawVol = document.getElementById('quick-res-draw').textContent;
-    const dilFluid = document.getElementById('quick-dil-fluid').textContent;
-    const dilVol = document.getElementById('quick-dil-volume').textContent;
-    const totalVol = document.getElementById('quick-dil-total').textContent;
-    const dripRate = document.getElementById('quick-admin-rate').textContent;
-    const remark = document.getElementById('quick-remarks').textContent;
-    
-    if (!orderedDose || drawVol === '-') {
-        showNotification("ข้อมูลคำนวณไม่ครบถ้วน กรุณากรอกขนาดยาเพื่อคำนวณก่อน", "warning");
-        return;
-    }
-    
-    const isCritical = isHighAlert(selectedQuickDrug.name);
-    
-    let text = `=== บันทึกเตรียมยาผู้ป่วยเด็ก (Small Dose) รพ.โพนทอง ===\n`;
-    text += `รายการยา: ${selectedQuickDrug.name}${isCritical ? ' (⚠️ ยาความเสี่ยงสูง - High Alert)' : ''}\n`;
-    if (weight) text += `น้ำหนักผู้ป่วย: ${weight} kg\n`;
-    text += `ขนาดยาแพทย์สั่ง: ${orderedDose} mg\n\n`;
-    text += `[1. การละลายผงยา (Reconstitution)]\n`;
-    text += `- ใช้ตัวทำละลาย: ${selectedQuickDrug.solvent_volume || '-'}\n`;
-    text += `- ปริมาตรยาที่ดูดมาใช้: ${drawVol}\n\n`;
-    text += `[2. การเจือจางก่อนฉีด (Dilution)]\n`;
-    text += `- เจือจางในสารน้ำ: ${dilFluid}\n`;
-    text += `- เติมสารน้ำปริมาตร: ${dilVol}\n`;
-    text += `- ปริมาตรรวมสารน้ำหลังเจือจาง: ${totalVol}\n\n`;
-    text += `[3. การบริหารยา (Administration)]\n`;
-    text += `- ความเร็ว/เวลา Drip: ${dripRate}\n`;
-    if (remark && remark !== '-') text += `- หมายเหตุ: ${remark}\n`;
-    
-    navigator.clipboard.writeText(text).then(() => {
-        showNotification("คัดลอกรายละเอียดข้อมูลเตรียมยาไปยัง Clipboard สำเร็จ", "success");
-    }).catch(err => {
-        showNotification("การคัดลอกล้มเหลว กรุณาลองคัดลอกด้วยตนเอง", "danger");
-    });
-}
+
 
 // Render IV Batch Table (Tab 2)
 function renderIVBatchTable() {
