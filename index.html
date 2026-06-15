@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small Dose Calculator - รพ.โพนทอง</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
+                <div class="brand-text">
+                    <h2>Small Dose Calc</h2>
+                    <p>รพ.โพนทอง</p>
+                </div>
+            </div>
+            <nav class="sidebar-menu">
+                <button class="menu-item active" onclick="switchTab('quick-calc')">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="9" y1="9" x2="15" y2="9"/>
+                        <line x1="9" y1="13" x2="15" y2="13"/>
+                        <line x1="9" y1="17" x2="15" y2="17"/>
+                    </svg>
+                    <span>คำนวณรายตัว (Quick)</span>
+                </button>
+                <button class="menu-item" onclick="switchTab('iv-table')">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                    </svg>
+                    <span>ตารางคำนวณยา IV</span>
+                </button>
+                <button class="menu-item" onclick="switchTab('oral-calc')">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
+                    <span>คำนวณยาน้ำ</span>
+                </button>
+                <button class="menu-item" onclick="switchTab('db-editor')">
+                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                    </svg>
+                    <span>จัดการฐานข้อมูลยา</span>
+                </button>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="dark-mode-toggle" onclick="toggleDarkMode()">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                    </svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    <span id="dark-mode-label">โหมดกลางคืน</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-info">
+                    <h1 id="page-title">ระบบคำนวณยาสำหรับเด็ก (Small Dose)</h1>
+                    <p id="page-subtitle">กลุ่มงานเภสัชกรรม โรงพยาบาลโพนทอง จ.ร้อยเอ็ด</p>
+                </div>
+                <div class="db-status-badge" id="db-status">
+                    <span class="status-dot success"></span>
+                    <span id="db-status-text">ใช้ฐานข้อมูลโรงพยาบาล</span>
+                </div>
+            </header>
+
+            <!-- Tab 1: Quick Calc -->
+            <section id="tab-quick-calc" class="tab-pane active">
+                <div class="quick-calc-layout">
+                    <!-- Left Panel: Inputs -->
+                    <div class="card input-card">
+                        <div class="card-header">
+                            <h3>ป้อนข้อมูลคนไข้และคำสั่งแพทย์</h3>
+                        </div>
+                        <div class="card-body">
+                            <form id="quick-calc-form" onsubmit="event.preventDefault();">
+                                <div class="form-group dropdown-container">
+                                    <label for="quick-drug">ค้นหา/เลือกตัวยา <span class="required">*</span></label>
+                                    <div class="search-input-wrapper">
+                                        <input type="text" id="quick-drug" placeholder="พิมพ์ชื่อยา เช่น Ampicillin, Ceftriaxone..." autocomplete="off" oninput="onDrugSearch(this.value)" onkeydown="onDrugInputKeyDown(event)">
+                                        <button class="clear-btn" type="button" onclick="clearDrugSearch()">×</button>
+                                    </div>
+                                    <div id="drug-suggestions" class="dropdown-list"></div>
+                                </div>
+
+                                <div class="form-row">
+                                    <div class="form-group col-6">
+                                        <label for="quick-weight">น้ำหนักตัว (kg) <span class="required">*</span></label>
+                                        <input type="number" id="quick-weight" placeholder="เช่น 14.5" step="0.01" min="0.1" oninput="calculateQuickDose()">
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="quick-age">อายุ (ปี)</label>
+                                        <input type="number" id="quick-age" placeholder="เช่น 2" step="0.1" min="0" oninput="calculateQuickDose()">
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="quick-dose">ขนาดยาที่สั่ง (mg) <span class="required">*</span></label>
+                                    <input type="number" id="quick-dose" placeholder="ป้อนปริมาณ mg ที่แพทย์สั่ง" step="0.01" min="0" oninput="calculateQuickDose()">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Right Panel: Results & Guides -->
+                    <div class="results-column">
+                        <!-- Dose Verification Alert -->
+                        <div class="card alert-card warning-level-none" id="dose-alert-card">
+                            <div class="alert-status-icon">
+                                <svg class="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                                    <polyline points="20 6 9 17 4 12"/>
+                                </svg>
+                                <svg class="icon-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;">
+                                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                                </svg>
+                            </div>
+                            <div class="alert-content">
+                                <h4 id="dose-alert-title">พร้อมคำนวณ</h4>
+                                <p id="dose-alert-desc">กรุณาเลือกรายการยา น้ำหนักตัว และระบุขนาดยาที่แพทย์สั่งด้านซ้าย</p>
+                            </div>
+                        </div>
+
+                        <!-- Details Cards Grid -->
+                        <div class="details-grid">
+                            <!-- Dose Limits Card -->
+                            <div class="card detail-card">
+                                <div class="card-header border-orange">
+                                    <div class="header-title">
+                                        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                        </svg>
+                                        <h4>1. เกณฑ์ขนาดยาอ้างอิง (Dosing Guide)</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="detail-row">
+                                        <span class="label">ความถี่การให้ยา:</span>
+                                        <span class="value" id="quick-dose-freq">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">ขนาดยาต่ำสุดต่อครั้ง:</span>
+                                        <span class="value" id="quick-dose-min">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">ขนาดยาสูงสุดต่อครั้ง:</span>
+                                        <span class="value" id="quick-dose-max">-</span>
+                                    </div>
+                                    <div class="detail-row highlight-orange">
+                                        <span class="label">เกณฑ์ขนาดยาแนะนำ:</span>
+                                        <span class="value" id="quick-dose-range-desc" style="font-size: 0.8rem; font-weight: normal; text-align: right; max-width: 60%; word-break: break-word;">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reconstitution Card -->
+                            <div class="card detail-card">
+                                <div class="card-header border-teal">
+                                    <div class="header-title">
+                                        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5"/>
+                                            <path d="M12 2v10M9 8h6M12 12a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                                        </svg>
+                                        <h4>2. การละลายผงยา (Reconstitution)</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="detail-row">
+                                        <span class="label">สารน้ำที่ใช้ผสม:</span>
+                                        <span class="value" id="quick-res-solvent">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">ความเข้มข้นหลังผสมเสร็จ:</span>
+                                        <span class="value" id="quick-res-conc">-</span>
+                                    </div>
+                                    <div class="detail-row highlight-teal">
+                                        <span class="label">ปริมาตรยาที่ต้องดูดออกมา:</span>
+                                        <span class="value font-large" id="quick-res-draw">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Dilution Card -->
+                            <div class="card detail-card">
+                                <div class="card-header border-indigo">
+                                    <div class="header-title">
+                                        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M12 2v20M5 5h14M5 19h14M19 5v14M5 5v14"/>
+                                        </svg>
+                                        <h4>3. การเจือจางก่อนฉีด (Dilution)</h4>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="detail-row">
+                                        <span class="label">สารน้ำที่ใช้เจือจาง:</span>
+                                        <span class="value" id="quick-dil-fluid">-</span>
+                                    </div>
+                                    <div class="detail-row">
+                                        <span class="label">ปริมาตรสารน้ำเจือจางที่ต้องเติม:</span>
+                                        <span class="value" id="quick-dil-volume">-</span>
+                                    </div>
+                                    <div class="detail-row highlight-indigo">
+                                        <span class="label">ปริมาตรรวม (Total Volume):</span>
+                                        <span class="value font-large" id="quick-dil-total">-</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Drip Rate & Remarks -->
+                        <div class="card guide-card">
+                            <div class="card-body">
+                                <div class="guide-section">
+                                    <h5>
+                                        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                        </svg>
+                                        ความเร็วและเวลาในการให้ยา (Administration Rate)
+                                    </h5>
+                                    <p class="guide-text" id="quick-admin-rate">-</p>
+                                </div>
+                                <div class="guide-section border-top">
+                                    <h5>
+                                        <svg class="title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                                        </svg>
+                                        หมายเหตุการบริหารยา
+                                    </h5>
+                                    <p class="guide-text warning-text" id="quick-remarks">-</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Controls -->
+                        <div class="action-buttons" style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem;">
+                            <button class="btn btn-primary btn-icon" id="copy-summary-btn" onclick="copyCalculationSummary()" style="flex: 1; min-width: 200px; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1.2rem; height: 1.2rem;">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                </svg>
+                                คัดลอกวิธีเตรียมและบริหารยา (ส่ง Line/บันทึกเวชระเบียน)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 2: IV Table Sheet -->
+            <section id="tab-iv-table" class="tab-pane">
+                <div class="card table-card">
+                    <div class="card-header table-actions">
+                        <div class="search-box">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            <input type="text" id="table-search" placeholder="ค้นหาตัวยาในตาราง..." oninput="filterIVTable(this.value)">
+                        </div>
+                        <div class="table-legend">
+                            <span class="legend-item"><span class="color-dot red"></span> ช่องสีแดง = ป้อนข้อมูลขนาดยา</span>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="iv-batch-table">
+                            <thead>
+                                <tr>
+                                    <th>รายการยา</th>
+                                    <th>สารน้ำผสมผงยา (ml)</th>
+                                    <th>Conc. (mg/ml)</th>
+                                    <th>สารน้ำที่ใช้เจือจาง</th>
+                                    <th>ขนาดยาที่สั่ง (mg)</th>
+                                    <th>ปริมาตรยาที่ใช้ (ml)</th>
+                                    <th>ปริมาตรสารน้ำเจือจาง (ml)</th>
+                                    <th>ปริมาตรรวม (ml)</th>
+                                    <th>เวลา Drip / ข้อแนะนำ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="iv-table-body">
+                                <!-- Prepopulated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 3: Oral Calc -->
+            <section id="tab-oral-calc" class="tab-pane">
+                <div class="oral-calc-layout">
+                    <!-- Weight Input Card -->
+                    <div class="card input-card compact">
+                        <div class="card-body form-row-align">
+                            <div class="form-group flex-1">
+                                <label for="oral-weight">ป้อนน้ำหนักตัวผู้ป่วย (kg) <span class="required">*</span></label>
+                                <div class="input-with-suffix">
+                                    <input type="number" id="oral-weight" placeholder="เช่น 10.0" step="0.1" min="0.1" oninput="calculateOralDoses(this.value)">
+                                    <span class="suffix">กิโลกรัม (kg)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Oral Drugs Guideline Table -->
+                    <div class="card table-card">
+                        <div class="card-header">
+                            <h3>ตารางแนะนำขนาดยาน้ำสปอยด์ (Oral Suspension) สำหรับเด็ก</h3>
+                        </div>
+                        <div class="table-container">
+                            <table id="oral-table">
+                                <thead>
+                                    <tr>
+                                        <th>รายการยาน้ำ</th>
+                                        <th>ความเข้มข้น</th>
+                                        <th>ขนาดยามาตรฐาน (ml)</th>
+                                        <th>ขนาดยาสูงสุด/High Dose (ml)</th>
+                                        <th>ขนาดยาเทียบต่อวัน (Sanford)</th>
+                                        <th>คำแนะนำ Micromedex / ข้อห้ามใช้อายุ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="oral-table-body">
+                                    <!-- Prepopulated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 4: Database Editor -->
+            <section id="tab-db-editor" class="tab-pane">
+                <div class="db-editor-layout">
+                    <!-- Database tabs -->
+                    <div class="db-tabs">
+                        <button class="db-tab-btn active" onclick="switchDbTab('iv')">ข้อมูลยา IV</button>
+                        <button class="db-tab-btn" onclick="switchDbTab('oral')">ข้อมูลยาน้ำ (Oral)</button>
+                    </div>
+
+                    <div class="db-actions-row">
+                        <button class="btn btn-outline" onclick="resetDatabaseToDefault()">รีเซ็ตข้อมูลยาเป็นค่าเริ่มต้น</button>
+                        <button class="btn btn-outline btn-icon" onclick="exportDatabaseJSON()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                            </svg>
+                            สำรองข้อมูล (Export JSON)
+                        </button>
+                        <button class="btn btn-outline btn-icon" onclick="document.getElementById('db-import-file').click()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                            </svg>
+                            นำเข้าข้อมูล (Import JSON)
+                        </button>
+                        <input type="file" id="db-import-file" style="display:none;" accept=".json" onchange="importDatabaseJSON(this)">
+                        
+                        <div class="spacer"></div>
+                        
+                        <button class="btn btn-primary" onclick="openAddDrugModal()">+ เพิ่มรายการยาใหม่</button>
+                    </div>
+
+                    <div class="card table-card">
+                        <div class="table-container">
+                            <table id="editor-table">
+                                <thead id="editor-table-head">
+                                    <!-- Dynamic headers -->
+                                </thead>
+                                <tbody id="editor-table-body">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <span id="toast-message">แจ้งเตือน</span>
+    </div>
+
+    <!-- Drug Editor Modal -->
+    <div id="drug-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">แก้ไขข้อมูลยา</h3>
+                <span class="close-modal" onclick="closeDrugModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="drug-editor-form" onsubmit="saveDrugForm(event)">
+                    <input type="hidden" id="edit-drug-index">
+                    <input type="hidden" id="edit-drug-type">
+                    
+                    <div class="form-group">
+                        <label for="edit-name">ชื่อยา (รายการยา) <span class="required">*</span></label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+
+                    <!-- Dynamic form sections for IV vs Oral will be set in JS -->
+                    <div id="iv-form-fields" style="display:none;">
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label for="edit-solvent">สารน้ำละลายผงยา (ml)</label>
+                                <input type="text" id="edit-solvent" placeholder="เช่น SWI 9.6 ml หรือ 0 สำหรับยาน้ำ">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="edit-conc-num">ความเข้มข้นตัวยา (mg/ml) <span class="required">*</span></label>
+                                <input type="number" id="edit-conc-num" step="0.0001" min="0.0001" placeholder="เช่น 100">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label for="edit-diluent">สารน้ำที่ใช้เจือจาง</label>
+                                <input type="text" id="edit-diluent" placeholder="เช่น NSS, D5W">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="edit-admin-conc-num">ความเข้มข้นต่ำสุด (mg/ml)</label>
+                                <input type="text" id="edit-admin-conc-num" placeholder="เช่น 10.0 (ป้อนตัวเลขหรือ -)">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-admin-rate">อัตราการให้ยา (Rate)</label>
+                            <input type="text" id="edit-admin-rate" placeholder="เช่น IV drip in 30 min">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-sanford-dose">คำแนะนำขนาดยา (Sanford Guide)</label>
+                            <textarea id="edit-sanford-dose" rows="2" placeholder="รายละเอียดเกณฑ์ขนาดยา"></textarea>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-4">
+                                <label for="edit-min-dose-per-kg">Min Dose (mg/kg/day)</label>
+                                <input type="number" id="edit-min-dose-per-kg" step="0.1" placeholder="เช่น 20">
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="edit-max-dose-per-kg">Max Dose (mg/kg/day)</label>
+                                <input type="number" id="edit-max-dose-per-kg" step="0.1" placeholder="เช่น 40">
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="edit-divided-per-day">แบ่งให้วันละ (ครั้ง)</label>
+                                <input type="number" id="edit-divided-per-day" step="1" placeholder="เช่น 3">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <label for="edit-frequency">คำอธิบายความถี่</label>
+                                <input type="text" id="edit-frequency" placeholder="เช่น ทุก 8 ชั่วโมง">
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="edit-remarks">หมายเหตุเพิ่มเติม</label>
+                                <input type="text" id="edit-remarks" placeholder="ข้อพึงระวัง">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="oral-form-fields" style="display:none;">
+                        <div class="form-group">
+                            <label for="edit-oral-conc">ความเข้มข้น (mg/ml) <span class="required">*</span></label>
+                            <input type="text" id="edit-oral-conc" placeholder="เช่น 25.0">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-oral-sanford-std">Standard Dose (Sanford)</label>
+                            <input type="text" id="edit-oral-sanford-std" placeholder="เช่น 25-50 mg/kg/day divided q 8h">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-oral-sanford-high">High Dose (Sanford)</label>
+                            <input type="text" id="edit-oral-sanford-high" placeholder="เช่น 90 mg/kg/day">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-oral-micromedex-std">Standard Dose (Micromedex)</label>
+                            <textarea id="edit-oral-micromedex-std" rows="2" placeholder="แนวทาง Micromedex"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="edit-oral-ministry">กระทรวงสาธารณสุข</label>
+                            <input type="text" id="edit-oral-ministry" placeholder="เช่น 20-50 mg/kg/day">
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeDrugModal()">ยกเลิก</button>
+                        <button type="submit" class="btn btn-primary">บันทึกข้อมูล</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation Bar (Bottom Navigation for Phones) -->
+    <div class="mobile-nav">
+        <button class="mobile-nav-item active" id="mob-btn-quick" onclick="switchTab('quick-calc')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/>
+            </svg>
+            <span>คำนวณด่วน</span>
+        </button>
+        <button class="mobile-nav-item" id="mob-btn-iv" onclick="switchTab('iv-table')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+            </svg>
+            <span>ยา IV</span>
+        </button>
+        <button class="mobile-nav-item" id="mob-btn-oral" onclick="switchTab('oral-calc')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            <span>ยาน้ำ</span>
+        </button>
+        <button class="mobile-nav-item" id="mob-btn-db" onclick="switchTab('db-editor')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+            <span>คลังยา</span>
+        </button>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
