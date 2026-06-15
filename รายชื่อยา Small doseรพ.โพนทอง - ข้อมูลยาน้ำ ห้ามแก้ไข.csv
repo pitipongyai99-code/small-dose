@@ -1,29 +1,36 @@
 รายการยา,Concentration (mg/ml),standard dose (sanford guide 2025) age > 28 day,High dose regimen (sanford guide 2025),max dose,Standard Dose (micromedex),High dose regimen,Maximum dose,กระทรวง,อายุ
-"AMOXICILLIN 125 mg/5ml x 1 ขวด (60 ml.)
-",25,25-50 mg/kg/day divied q 8 hr,80-100 mg/kg/day,,"<3 MO 15 mg/kg/dose q 12 hr
+AMOXICILLIN 125 mg/5ml x 1 ขวด (60 ml.),25.0,25-50 mg/kg/day divied q 8 hr,80-100 mg/kg/day,2-3 g/day (max 875 mg/dose),"<3 MO 15 mg/kg/dose q 12 hr
 >3 MO & Wt.<40 kg 25-45 mg/kg/day
->=3 MO& Wt. >40 kg 500 mg/dose q 8-12 hr, 250 mg/dose q 8 hr, 875 mg q 12 hr",50 mg/kg/dose,,20-50 mg/kg/day divied q 8 hr,
-Co-Amoxiclav 457 mg/5ml x 1 ขวด,******amoxy content,45 mg/kg/day,90 mg/kg/day,,"<90 day: 30 mg/kg/day divied q 12 hr
->90 day: 25 mg/kg/day divied q 12 hr (max 500 mg/dose), 20 mg/kg/day divied q 8 hr (max250 mg/dose)",90 mg/kg/day,,25-45 mg/kg/day divied q 8 hr,
-DICLOXACILLIN 62.5 mg/5ml x 1 ขวด (60 ml.),12.5,12.5-25 mg/kg/day divied q 6 hr,,,"SSTI: 
-",,,12.5-25 mg/kg/day divied q 6 hr,
-CO-TRIMOXAZOLE susp 240 mg/5ml x 1 ขวด (60 ml.),48,"8-10 TMP/kg/day divied q 12 hr
-PJP: 15-20 TMP/kg/day divied q 6-8 hr",,,,,,4 mg/kg/dose  q 8 hr,
-cePHALEXIN SYRUP 125 mg/5ml x 1 syrup,25,25-100 mg/kg/day divied q 6 hr,mg/kg/day divied q hr,,,,,25-50 mg/kg/day divied q 6 hr,
-CEFIXIME(Cefspan) SYRUP 100 mg/5ml x 1 ขวด,20,8 mg/kg/day divied q 12-24 hr,,,,,,,
-ERYTHROMYCIN 125 mg/5ml x 1 ขวด (60 ml.),25,45-50 mg/kg/day divied q 6 hr,,,,,,30-50 mg/kg/day divied q 6 hr,
-azithromycin,,5-12 mg/kg/day,,,,,,10 mg/kg/day OD,
-Favipiravir 100 mg/1ml,100,,,,,,,,
+>=3 MO& Wt. >40 kg 500 mg/dose q 8-12 hr, 250 mg/dose q 8 hr, 875 mg q 12 hr",50 mg/kg/dose,3000 mg/day,20-50 mg/kg/day divied q 8 hr,
+Co-Amoxiclav 457 mg/5ml x 1 ขวด,80.0,45 mg/kg/day divied q 12 hr,90 mg/kg/day divied q 12 hr,90 mg/kg/day (max 4000 mg Amox/day),"<90 day: 30 mg/kg/day divied q 12 hr
+>90 day: 25 mg/kg/day divied q 12 hr (max 500 mg/dose), 20 mg/kg/day divied q 8 hr (max250 mg/dose)",90 mg/kg/day,4000 mg/day,25-45 mg/kg/day divied q 8 hr,
+DICLOXACILLIN 62.5 mg/5ml x 1 ขวด (60 ml.),12.5,12.5-25 mg/kg/day divied q 6 hr,50-100 mg/kg/day divied q 6 hr,2000-4000 mg/day (max 500-1000 mg/dose),SSTI: 12.5-25 mg/kg/day divied q 6 hr (max 250 mg/dose),50-100 mg/kg/day divied q 6 hr,4000 mg/day,12.5-25 mg/kg/day divied q 6 hr,
+CO-TRIMOXAZOLE susp 240 mg/5ml x 1 ขวด (60 ml.),8.0,8-10 mg/kg/day (TMP) divied q 12 hr,15-20 mg/kg/day (TMP) divied q 6 hr,320 mg TMP/day,"Mild-mod: 8 mg TMP/kg/day divied q 12 hr
+Severe/PJP: 15-20 mg TMP/kg/day divied q 6-8 hr",15-20 mg TMP/kg/day divied q 6 hr,320 mg TMP/day,4 mg/kg/dose (TMP) q 8 hr,
+cePHALEXIN SYRUP 125 mg/5ml x 1 syrup,25.0,25-100 mg/kg/day divied q 6 hr,75-100 mg/kg/day divied q 6 hr,4 g/day (max 1 g/dose),"Mild-mod: 25-50 mg/kg/day divied q 6 hr
+Severe: 75-100 mg/kg/day divied q 6 hr",75-100 mg/kg/day divied q 6 hr,4 g/day,25-50 mg/kg/day divied q 6 hr,
+CEFIXIME(Cefspan) SYRUP 100 mg/5ml x 1 ขวด,20.0,8 mg/kg/day divied q 12-24 hr,15-20 mg/kg/day divied q 12 hr,400 mg/day,Mild-mod: 8 mg/kg/day divied q 12-24 hr (max 400 mg/day),15-20 mg/kg/day divied q 12 hr,400 mg/day,8 mg/kg/day divied q 12-24 hr,
+ERYTHROMYCIN 125 mg/5ml x 1 ขวด (60 ml.),25.0,45-50 mg/kg/day divied q 6 hr,50-100 mg/kg/day divied q 6 hr,2 g/day (max 4 g/day for severe),Mild-mod: 30-50 mg/kg/day divied q 6-8 hr (max 2 g/day),50-100 mg/kg/day divied q 6 hr,4 g/day,30-50 mg/kg/day divied q 6 hr,
+AZITHROMYCIN 200 mg/5ml x 1 ขวด (15 ml.),40.0,10 mg/kg/day OD for 3 days,12 mg/kg/day OD,500 mg/day,"10 mg/kg/day OD on Day 1, then 5 mg/kg/day OD on Days 2-5 (max 500 mg on day 1, 250 mg on days 2-5)",12 mg/kg/day OD,500 mg/day,10 mg/kg/day OD,
+Favipiravir 100 mg/1ml,100.0,"Loading: 70 mg/kg/dose q 12 hr (Day 1), Maint: 30 mg/kg/dose q 12 hr (Day 2-5)",-,"Loading 1800 mg/dose, Maint 800 mg/dose","Pediatric COVID-19: Loading 70 mg/kg/dose q 12 hr (Day 1), Maint 30 mg/kg/dose q 12 hr (Day 2-5)",-,"Loading 1800 mg/dose, Maint 800 mg/dose","Loading 70 mg/kg/dose q 12 hr, Maint 30 mg/kg/dose q 12 hr",
 ,,,,,,,,,
 ,,,,,,,,,
-PARACETAMOL SUSPENSION 120 mg/5ml x 1 ขวด,24,,,,"<60 kg: 10-15 mg/kg/dose mg q 4-6 hr
->=60 kg: 650-1000 mg q 4-6 hr",,4 gm/day,10-15 mg/kg/dose q 4-6 hr,
-CPM 2 mg/5ml x 1 ขวด (60 ml.),0.4,,,4 gm/day,,,,0.35 mg/kg/day divied q 6-8 hr,
-CETIRIZINE 5 mg/5ml x 1 ขวด (60 ml.),1,,,,,,,,
-IBUPROFEN SUSP 100 mg/5ml x 1 ขวด,20,,,,,,,5-10 mg/kg/dose q6-8 hr,
-GLYCERYL GUAIACOLATE 100 mg/5ml x 1 ขวด,,,,,,,,,
-HYOSCINE SYR 5 mg/5ml x 1 ขวด (30 ml.),,,,,,,,,
-SIMETHICONE drop 67 mg./ml. x 1 ขวด (15 ml.),,,,,,,,,
-TERBUTALINE SYRUP 1.5 mg/5ml x 1 ขวด,0.3,,,,,,,,
-DOMPERIDONE 5 mg/5ml x 1 ขวด (30 ml.),1,,,,,,,0.2-0.4 mg/kg/dose q 8 hr,
-smecta,,,,,,,,,
+PARACETAMOL SUSPENSION 120 mg/5ml x 1 ขวด,24.0,10-15 mg/kg/dose q 4-6 hr,-,75 mg/kg/day (max 4000 mg/day),"<60 kg: 10-15 mg/kg/dose q 4-6 hr
+>=60 kg: 650-1000 mg q 4-6 hr",-,4 gm/day,10-15 mg/kg/dose q 4-6 hr,
+CPM 2 mg/5ml x 1 ขวด (60 ml.),0.4,0.35 mg/kg/day divied q 6 hr,-,12 mg/day,"2-5 yr: 1 mg q 4-6 hr (max 6 mg/day)
+6-11 yr: 2 mg q 4-6 hr (max 12 mg/day)",-,12 mg/day,0.35 mg/kg/day divied q 6-8 hr,Age >= 2 years
+CETIRIZINE 5 mg/5ml x 1 ขวด (60 ml.),1.0,0.25 mg/kg/day OD,-,10 mg/day,"6 mo-2 yr: 2.5 mg OD
+2-5 yr: 2.5-5 mg OD
+>=6 yr: 5-10 mg OD",-,10 mg/day,0.25 mg/kg/day OD,Age >= 6 months
+IBUPROFEN SUSP 100 mg/5ml x 1 ขวด,20.0,5-10 mg/kg/dose q 6 hr,10 mg/kg/dose q 6 hr,40 mg/kg/day (max 2400 mg/day),"Mild-mod: 5-10 mg/kg/dose q 6-8 hr (max 400 mg/dose, 40 mg/kg/day)",JIA: 30-40 mg/kg/day divied q 6-8 hr,2400 mg/day,5-10 mg/kg/dose q 6-8 hr,Age >= 6 months
+GLYCERYL GUAIACOLATE 100 mg/5ml x 1 ขวด,20.0,12 mg/kg/day divied q 6 hr,-,600-1200 mg/day,"2-5 yr: 50-100 mg q 4 hr (max 600 mg/day)
+6-11 yr: 100-200 mg q 4 hr (max 1200 mg/day)
+>=12 yr: 200-400 mg q 4 hr (max 2400 mg/day)",-,2400 mg/day,12 mg/kg/day divied q 6 hr,Age >= 2 years
+HYOSCINE SYR 5 mg/5ml x 1 ขวด (30 ml.),1.0,0.5 mg/kg/day divied q 8 hr,-,1.5 mg/kg/day (max 40 mg/day),"1-4 yr: 2.5 mg q 8 hr
+5-11 yr: 5-10 mg q 8 hr
+>=12 yr: 10-20 mg q 6-8 hr",-,40 mg/day,0.5 mg/kg/day divied q 8 hr,Age >= 1 year
+SIMETHICONE drop 67 mg./ml. x 1 ขวด (15 ml.),67.0,1-2 mg/kg/dose q 6 hr,-,240 mg/day,"<2 yr: 20 mg/dose q 6-8 hr (max 120 mg/day)
+>=2 yr: 40 mg/dose q 6-8 hr (max 240 mg/day)",-,240 mg/day,1-2 mg/kg/dose q 6-8 hr,
+TERBUTALINE SYRUP 1.5 mg/5ml x 1 ขวด,0.3,0.15 mg/kg/day divied q 8 hr,0.3 mg/kg/day divied q 8 hr,5 mg/day,0.15-0.3 mg/kg/day divided q 8 hr (max 5 mg/day),0.3 mg/kg/day divided q 8 hr,5 mg/day,0.15 mg/kg/day divied q 8 hr,Age >= 2 years
+DOMPERIDONE 5 mg/5ml x 1 ขวด (30 ml.),1.0,0.25 mg/kg/dose q 8 hr,-,0.75 mg/kg/day (max 30 mg/day),0.25 mg/kg/dose q 8 hr (max 30 mg/day),-,30 mg/day,0.2-0.4 mg/kg/dose q 8 hr,Age >= 1 year
+smecta,0.0,<1 yr: 1 pack/day; 1-2 yr: 1-2 pack/day; >2 yr: 2-3 pack/day,-,3 packets/day,Acute diarrhea: <1 yr: 1 pack/day; 1-2 yr: 1-2 pack/day; >2 yr: 2-3 pack/day,-,3 packets/day,<1 yr: 1 pack/day; 1-2 yr: 1-2 pack/day; >2 yr: 2-3 pack/day,Age >= 2 years
