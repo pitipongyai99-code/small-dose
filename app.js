@@ -585,6 +585,7 @@ function filterOralTable(query) {
 // Render Oral Table (Tab 3)
 function renderOralTable() {
     const tbody = document.getElementById('oral-table-body');
+    if (!tbody) return;
     tbody.innerHTML = '';
     
     oralDrugs.forEach((d, index) => {
@@ -602,6 +603,12 @@ function renderOralTable() {
         `;
         tbody.appendChild(tr);
     });
+
+    // Automatically recalculate doses if a weight value is already entered in the input field
+    const weightInput = document.getElementById('oral-weight');
+    if (weightInput) {
+        calculateOralDoses(weightInput.value);
+    }
 }
 
 // Calculate Oral Syrup Dose
@@ -611,6 +618,7 @@ function calculateOralDoses(weightVal) {
     oralDrugs.forEach((d, index) => {
         const stdTd = document.getElementById(`oral-std-${index}`);
         const highTd = document.getElementById(`oral-high-${index}`);
+        if (!stdTd || !highTd) return;
         
         if (isNaN(weight) || weight <= 0) {
             const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
@@ -650,7 +658,7 @@ function calculateOralDoses(weightVal) {
             highTd.innerHTML = `<span class="dose-badge dose-high" title="${escapeHtml(highDoseObj.explanation)}">${highDoseObj.rangeText} ml</span>`;
         } else {
             const rawRef = d.sanford_high_dose || '-';
-            stdTd.innerHTML = `<span class="dose-badge dose-empty" title="ไม่มีเกณฑ์ขนาดยาสูงสุดแยกต่างหาก หรือไม่สามารถคำนวณอัตโนมัติได้\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawRef)}">-</span>`;
+            highTd.innerHTML = `<span class="dose-badge dose-empty" title="ไม่มีเกณฑ์ขนาดยาสูงสุดแยกต่างหาก หรือไม่สามารถคำนวณอัตโนมัติได้\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawRef)}">-</span>`;
         }
     });
 }
