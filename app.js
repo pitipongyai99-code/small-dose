@@ -76,7 +76,8 @@ function parseCSVData(csvText, type) {
                 max_dose_per_kg: parseFloat(r[12]) || null,
                 divided_per_day: parseFloat(r[13]) || null,
                 frequency: r[14],
-                age_limit: r[15]
+                age_limit: r[15],
+                icode: r[16] ? r[16].trim() : ""
             });
         }
     } else if (type === 'oral') {
@@ -94,7 +95,8 @@ function parseCSVData(csvText, type) {
                 micromedex_high_dose: r[6],
                 micromedex_max_dose: r[7],
                 ministry_dose: r[8],
-                age_limit: r[9]
+                age_limit: r[9],
+                icode: r[10] ? r[10].trim() : ""
             });
         }
     }
@@ -156,6 +158,10 @@ async function initDatabase() {
         }
     }
     
+    // Ensure icode property is always present
+    ivDrugs = ivDrugs.map(d => ({ icode: '', ...d }));
+    oralDrugs = oralDrugs.map(d => ({ icode: '', ...d }));
+    
     renderIVBatchTable();
     renderOralTable();
     renderEditorTable();
@@ -190,7 +196,7 @@ function switchTab(tabId) {
     const titles = {
         'quick-calc': ['ระบบคำนวณยาสำหรับเด็ก (Small Dose)', 'คำนวณขนาดยาและการเจือจางแบบรายตัว (Quick Calculator)'],
         'iv-table': ['ตารางคำนวณยา IV ทั้งหมด', 'ตารางการเตรียมยาฉีด IV คล้ายรูปแบบ Excel ป้อนปริมาณขนาดยาเพื่อคำนวณอัตโนมัติ'],
-        'oral-calc': ['ตารางคำนวณยาน้ำกุมาร', 'คู่มือแนะนำขนาดยาน้ำรับประทานสำหรับเด็กตามเกณฑ์น้ำหนักตัว'],
+        'oral-calc': ['ตารางคำนวณยาน้ำเด็ก', 'คู่มือแนะนำขนาดยาน้ำรับประทานสำหรับเด็กตามเกณฑ์น้ำหนักตัว'],
         'db-editor': ['จัดการฐานข้อมูลยา', 'ตรวจสอบและปรับปรุงเกณฑ์ขนาดยาของโรงพยาบาลโพนทอง']
     };
     
@@ -471,6 +477,7 @@ function renderIVBatchTable() {
         const tr = document.createElement('tr');
         tr.id = `iv-row-${index}`;
         tr.innerHTML = `
+            <td><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
             <td><strong>${escapeHtml(d.name)}</strong></td>
             <td>${d.solvent_volume || '-'}</td>
             <td>${d.conc_text || '-'}</td>
@@ -531,7 +538,23 @@ function calculateIVTableRow(index) {
 function filterIVTable(query) {
     ivDrugs.forEach((d, index) => {
         const row = document.getElementById(`iv-row-${index}`);
-        if (d.name.toLowerCase().includes(query.toLowerCase())) {
+        const nameMatch = d.name.toLowerCase().includes(query.toLowerCase());
+        const icodeMatch = (d.icode || '').toLowerCase().includes(query.toLowerCase());
+        if (nameMatch || icodeMatch) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+// Filter Oral table search
+function filterOralTable(query) {
+    oralDrugs.forEach((d, index) => {
+        const row = document.getElementById(`oral-row-${index}`);
+        const nameMatch = d.name.toLowerCase().includes(query.toLowerCase());
+        const icodeMatch = (d.icode || '').toLowerCase().includes(query.toLowerCase());
+        if (nameMatch || icodeMatch) {
             row.style.display = '';
         } else {
             row.style.display = 'none';
@@ -549,6 +572,7 @@ function renderOralTable() {
         tr.id = `oral-row-${index}`;
         const concDisplay = (parseFloat(d.concentration) > 0) ? `${d.concentration} mg/ml` : '-';
         tr.innerHTML = `
+            <td><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
             <td><strong>${escapeHtml(d.name)}</strong></td>
             <td>${concDisplay}</td>
             <td id="oral-std-${index}" class="font-large">-</td>
@@ -666,6 +690,7 @@ function renderEditorTable() {
     if (activeDbTab === 'iv') {
         thead.innerHTML = `
             <tr>
+                <th>Icode</th>
                 <th>ชื่อยา</th>
                 <th>ละลายผงยา (ml)</th>
                 <th>Conc (mg/ml)</th>
@@ -681,6 +706,7 @@ function renderEditorTable() {
         ivDrugs.forEach((d, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
+                <td><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
                 <td><strong>${escapeHtml(d.name)}</strong></td>
                 <td>${d.solvent_volume || '-'}</td>
                 <td>${d.conc_num || '-'}</td>
@@ -699,6 +725,7 @@ function renderEditorTable() {
     } else {
         thead.innerHTML = `
             <tr>
+                <th>Icode</th>
                 <th>ชื่อยาน้ำ</th>
                 <th>ความเข้มข้น (mg/ml)</th>
                 <th>Std Dose (Sanford)</th>
@@ -712,6 +739,7 @@ function renderEditorTable() {
         oralDrugs.forEach((d, index) => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
+                <td><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
                 <td><strong>${escapeHtml(d.name)}</strong></td>
                 <td>${d.concentration || '-'}</td>
                 <td>${d.sanford_std_dose || '-'}</td>
@@ -736,11 +764,13 @@ function openEditDrugModal(type, index) {
     const ivFields = document.getElementById('iv-form-fields');
     const oralFields = document.getElementById('oral-form-fields');
     
+    const d = type === 'iv' ? ivDrugs[index] : oralDrugs[index];
+    document.getElementById('edit-icode').value = d.icode || '';
+    
     if (type === 'iv') {
         ivFields.style.display = 'block';
         oralFields.style.display = 'none';
         
-        const d = ivDrugs[index];
         document.getElementById('modal-title').textContent = "แก้ไขยาฉีด IV";
         document.getElementById('edit-name').value = d.name;
         document.getElementById('edit-solvent').value = d.solvent_volume || '';
@@ -758,8 +788,7 @@ function openEditDrugModal(type, index) {
         ivFields.style.display = 'none';
         oralFields.style.display = 'block';
         
-        const d = oralDrugs[index];
-        document.getElementById('modal-title').textContent = "แก้ไขยาน้ำกุมาร";
+        document.getElementById('modal-title').textContent = "แก้ไขยาน้ำเด็ก";
         document.getElementById('edit-name').value = d.name;
         document.getElementById('edit-oral-conc').value = d.concentration || '';
         document.getElementById('edit-oral-sanford-std').value = d.sanford_std_dose || '';
@@ -776,6 +805,7 @@ function openAddDrugModal() {
     document.getElementById('edit-drug-index').value = "-1"; // indicates new drug
     
     document.getElementById('drug-editor-form').reset();
+    document.getElementById('edit-icode').value = '';
     
     const ivFields = document.getElementById('iv-form-fields');
     const oralFields = document.getElementById('oral-form-fields');
@@ -787,7 +817,7 @@ function openAddDrugModal() {
     } else {
         ivFields.style.display = 'none';
         oralFields.style.display = 'block';
-        document.getElementById('modal-title').textContent = "เพิ่มยาน้ำกุมารตัวใหม่";
+        document.getElementById('modal-title').textContent = "เพิ่มยาน้ำเด็กตัวใหม่";
     }
     
     document.getElementById('drug-modal').classList.add('active');
@@ -805,10 +835,12 @@ function saveDrugForm(event) {
     const index = parseInt(document.getElementById('edit-drug-index').value);
     
     const name = document.getElementById('edit-name').value;
+    const icode = document.getElementById('edit-icode').value.trim();
     
     if (type === 'iv') {
         const drugObj = {
             name: name,
+            icode: icode,
             solvent_volume: document.getElementById('edit-solvent').value,
             total_volume: document.getElementById('edit-solvent').value ? document.getElementById('edit-solvent').value : '-',
             conc_text: document.getElementById('edit-conc-num').value + ' mg/ml',
@@ -836,6 +868,7 @@ function saveDrugForm(event) {
     } else {
         const drugObj = {
             name: name,
+            icode: icode,
             concentration: parseFloat(document.getElementById('edit-oral-conc').value) || document.getElementById('edit-oral-conc').value,
             sanford_std_dose: document.getElementById('edit-oral-sanford-std').value,
             sanford_high_dose: document.getElementById('edit-oral-sanford-high').value,

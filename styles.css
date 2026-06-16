@@ -1015,4 +1015,16 @@ tr:hover td {
     margin-left: 0.5rem;
 }
 
+.icode-badge {
+    background-color: var(--primary-light);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.35rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: monospace;
+    font-weight: 500;
+}
+
+
 
