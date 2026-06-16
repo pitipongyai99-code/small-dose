@@ -120,6 +120,26 @@ async function initDatabase() {
     let localIV = localStorage.getItem('smalldose_iv_drugs');
     let localOral = localStorage.getItem('smalldose_oral_drugs');
     
+    // Auto-migration: if cached data does not contain the new Oseltamivir (1680014), force-clear the cache
+    if (localOral) {
+        try {
+            const parsedOral = JSON.parse(localOral);
+            const hasNewDrug = parsedOral.some(d => d.icode === '1680014');
+            if (!hasNewDrug) {
+                localIV = null;
+                localOral = null;
+                localStorage.removeItem('smalldose_iv_drugs');
+                localStorage.removeItem('smalldose_oral_drugs');
+            }
+        } catch (e) {
+            console.error("Migration check failed, clearing cache:", e);
+            localIV = null;
+            localOral = null;
+            localStorage.removeItem('smalldose_iv_drugs');
+            localStorage.removeItem('smalldose_oral_drugs');
+        }
+    }
+    
     if (localIV && localOral) {
         ivDrugs = JSON.parse(localIV);
         oralDrugs = JSON.parse(localOral);
