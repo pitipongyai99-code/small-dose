@@ -613,16 +613,19 @@ function calculateOralDoses(weightVal) {
         const highTd = document.getElementById(`oral-high-${index}`);
         
         if (isNaN(weight) || weight <= 0) {
-            stdTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
-            highTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
+            const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
+            const rawHigh = d.sanford_high_dose || '-';
+            stdTd.innerHTML = `<span class="dose-badge dose-empty" title="กรุณาป้อนน้ำหนักตัวผู้ป่วยเพื่อคำนวณ\n\nเกณฑ์อ้างอิง:\n${escapeHtml(rawStd)}">-</span>`;
+            highTd.innerHTML = `<span class="dose-badge dose-empty" title="กรุณาป้อนน้ำหนักตัวผู้ป่วยเพื่อคำนวณ\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawHigh)}">-</span>`;
             return;
         }
         
         const conc = parseFloat(d.concentration);
         if (isNaN(conc)) {
-            // Some drug concentration might be a text (e.g. Co-Amoxiclav amoxy content)
-            stdTd.innerHTML = '<span class="dose-badge dose-empty" style="font-size: 0.75rem;">ดูความเข้มข้นสารออกฤทธิ์</span>';
-            highTd.innerHTML = '<span class="dose-badge dose-empty" style="font-size: 0.75rem;">ดูความเข้มข้นสารออกฤทธิ์</span>';
+            const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
+            const rawHigh = d.sanford_high_dose || '-';
+            stdTd.innerHTML = `<span class="dose-badge dose-empty" style="font-size: 0.75rem;" title="ความเข้มข้นของตัวยาไม่ได้ระบุเป็นตัวเลขเชิงเดี่ยว\nกรุณาคำนวณและประเมินตามส่วนผสมออกฤทธิ์หลัก\n\nเกณฑ์อ้างอิง:\n${escapeHtml(rawStd)}">ดูความเข้มข้นสารออกฤทธิ์</span>`;
+            highTd.innerHTML = `<span class="dose-badge dose-empty" style="font-size: 0.75rem;" title="ความเข้มข้นของตัวยาไม่ได้ระบุเป็นตัวเลขเชิงเดี่ยว\nกรุณาคำนวณและประเมินตามส่วนผสมออกฤทธิ์หลัก\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawHigh)}">ดูความเข้มข้นสารออกฤทธิ์</span>`;
             return;
         }
         
@@ -639,13 +642,15 @@ function calculateOralDoses(weightVal) {
         if (stdDoseObj) {
             stdTd.innerHTML = `<span class="dose-badge dose-std" title="${escapeHtml(stdDoseObj.explanation)}">${stdDoseObj.rangeText} ml</span>`;
         } else {
-            stdTd.innerHTML = '<span class="dose-badge dose-empty">อ้างอิงตารางเกณฑ์</span>';
+            const rawRef = d.sanford_std_dose || d.ministry_dose || '-';
+            stdTd.innerHTML = `<span class="dose-badge dose-empty" title="ไม่สามารถคำนวณอัตโนมัติได้เนื่องจากเกณฑ์เป็นแบบเงื่อนไขเฉพาะ\n\nเกณฑ์อ้างอิง:\n${escapeHtml(rawRef)}">อ้างอิงตารางเกณฑ์</span>`;
         }
         
         if (highDoseObj) {
             highTd.innerHTML = `<span class="dose-badge dose-high" title="${escapeHtml(highDoseObj.explanation)}">${highDoseObj.rangeText} ml</span>`;
         } else {
-            highTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
+            const rawRef = d.sanford_high_dose || '-';
+            stdTd.innerHTML = `<span class="dose-badge dose-empty" title="ไม่มีเกณฑ์ขนาดยาสูงสุดแยกต่างหาก หรือไม่สามารถคำนวณอัตโนมัติได้\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawRef)}">-</span>`;
         }
     });
 }
