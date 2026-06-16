@@ -1073,6 +1073,29 @@ tr:hover td {
     overflow-wrap: break-word;
 }
 
+/* Soft column background tints for Standard and High Doses */
+#oral-table td:nth-child(4) {
+    background-color: rgba(16, 185, 129, 0.03); /* Gentle green tint */
+}
+
+#oral-table td:nth-child(5) {
+    background-color: rgba(239, 68, 68, 0.03); /* Gentle red tint */
+}
+
+/* Minimalist zebra striping for reference columns */
+#oral-table tbody tr:nth-child(even) td:not(:nth-child(4)):not(:nth-child(5)) {
+    background-color: var(--bg-main);
+}
+
+body.dark-mode #oral-table td:nth-child(4) {
+    background-color: rgba(16, 185, 129, 0.06);
+}
+
+body.dark-mode #oral-table td:nth-child(5) {
+    background-color: rgba(239, 68, 68, 0.06);
+}
+
+
 /* Column width allocations */
 #oral-table th:nth-child(1),
 #oral-table td:nth-child(1) {
@@ -1115,7 +1138,7 @@ tr:hover td {
 }
 
 #oral-table tbody tr:hover td {
-    background-color: var(--primary-light);
+    background-color: var(--primary-light) !important;
 }
 
 /* Drug list names hierarchy styling */
