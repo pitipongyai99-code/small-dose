@@ -116,12 +116,17 @@ body {
     width: 2.25rem;
     height: 2.25rem;
     color: var(--primary);
+    filter: drop-shadow(0 2px 8px hsla(var(--primary-hue), 85%, 35%, 0.25));
 }
 
 .brand-text h2 {
     font-size: 1.15rem;
-    font-weight: 700;
+    font-weight: 800;
     line-height: 1.2;
+    background: linear-gradient(135deg, var(--primary), #00c6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.05));
 }
 
 .brand-text p {
