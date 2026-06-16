@@ -611,6 +611,186 @@ function renderOralTable() {
     }
 }
 
+// Check and calculate special drugs that have complex or non-standard guidelines
+function checkSpecialDrugDose(d, weight, conc) {
+    const name = d.name.toLowerCase();
+    
+    // 1. Smecta
+    if (name.includes('smecta')) {
+        return {
+            stdDoseObj: {
+                rangeText: '1 - 3 ซอง/วัน',
+                explanation: `คำนวณจากเกณฑ์คงที่ตามช่วงอายุ (Smecta):\n` +
+                             `• อายุน้อยกว่า 1 ปี: 1 ซองต่อวัน\n` +
+                             `• อายุ 1 - 2 ปี: 1 - 2 ซองต่อวัน\n` +
+                             `• อายุมากกว่า 2 ปี: 2 - 3 ซองต่อวัน`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 2. Nystatin
+    if (name.includes('nystatin')) {
+        return {
+            stdDoseObj: {
+                rangeText: '1 - 6 ml',
+                explanation: `คำนวณจากเกณฑ์คงที่ตามช่วงอายุ (Nystatin):\n` +
+                             `• ทารก (Infant): ครั้งละ 1 - 2 ml (แบ่งให้ทุก 6 ชม.)\n` +
+                             `• เด็กโต (Child): ครั้งละ 4 - 6 ml (แบ่งให้ทุก 6 ชม.)`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 3. Albendazole
+    if (name.includes('albendazole')) {
+        return {
+            stdDoseObj: {
+                rangeText: '5 - 10 ml',
+                explanation: `คำนวณจากเกณฑ์คงที่ตามช่วงอายุ (Albendazole - ให้ครั้งเดียว):\n` +
+                             `• อายุ 1 - 2 ปี: 5 ml (200 mg)\n` +
+                             `• อายุมากกว่า 2 ปี: 10 ml (400 mg)`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 4. Lactulose
+    if (name.includes('lactulose')) {
+        const minVal = 1 * weight;
+        const maxVal = 3 * weight;
+        const minR = isNaN(weight) ? 0 : Math.round(minVal * 10) / 10;
+        const maxR = isNaN(weight) ? 0 : Math.round(maxVal * 10) / 10;
+        
+        return {
+            stdDoseObj: {
+                rangeText: isNaN(weight) ? '-' : `${minR} - ${maxR} ml/วัน`,
+                explanation: isNaN(weight) ? 'กรุณาป้อนน้ำหนัก' : `คำนวณตามเกณฑ์น้ำหนักตัว (Lactulose: 1-3 ml/kg/day):\n` +
+                             `• น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                             `• ขนาดยาต่อวัน: ${minR} - ${maxR} ml/วัน (แบ่งให้วันละ 1-2 ครั้ง)\n\n` +
+                             `เกณฑ์อ้างอิงตามช่วงอายุ (Sanford):\n` +
+                             `• ทารก: 2.5 - 5 ml/วัน\n` +
+                             `• 1-4 ปี: 5 - 10 ml/วัน\n` +
+                             `• 5-11 ปี: 10 - 15 ml/วัน\n` +
+                             `• >=12 ปี: 15 - 30 ml/วัน`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 5. Oseltamivir
+    if (name.includes('oseltamivir')) {
+        let doseMg = 30;
+        let bandText = "≤ 15 kg";
+        if (weight > 15 && weight <= 23) {
+            doseMg = 45;
+            bandText = "15 - 23 kg";
+        } else if (weight > 23 && weight <= 40) {
+            doseMg = 60;
+            bandText = "23 - 40 kg";
+        } else if (weight > 40) {
+            doseMg = 75;
+            bandText = "> 40 kg";
+        }
+        
+        const doseMl = isNaN(weight) ? 0 : Math.round((doseMg / 6) * 10) / 10;
+        const infantMg = isNaN(weight) ? 0 : 3 * weight;
+        const infantMl = isNaN(weight) ? 0 : Math.round((infantMg / 6) * 10) / 10;
+        
+        return {
+            stdDoseObj: {
+                rangeText: isNaN(weight) ? '-' : `${doseMl} ml`,
+                explanation: isNaN(weight) ? 'กรุณาป้อนน้ำหนัก' : `คำนวณตามช่วงน้ำหนักผู้ป่วย (Oseltamivir - ทุก 12 ชม.):\n` +
+                             `• น้ำหนักผู้ป่วย: ${weight} kg (เกณฑ์ช่วงน้ำหนัก: ${bandText})\n` +
+                             `• ขนาดยาแนะนำ: ${doseMg} mg (${doseMl} ml) ต่อครั้ง\n\n` +
+                             `กรณีอายุน้อยกว่า 1 ปี (ใช้เกณฑ์ 3 mg/kg/dose):\n` +
+                             `• 3 mg × ${weight} kg = ${infantMg.toFixed(1)} mg (${infantMl} ml) ต่อครั้ง`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 6. Zidovudine (AZT)
+    if (name.includes('zidovudine') || name.includes('azt')) {
+        let doseMg = 0;
+        let ruleText = "";
+        let calcStep = "";
+        if (weight < 4) {
+            doseMg = 12 * weight;
+            ruleText = "< 4 kg: 12 mg/kg";
+            calcStep = `12 mg × ${weight} kg = ${doseMg.toFixed(1)} mg`;
+        } else if (weight >= 4 && weight < 9) {
+            doseMg = 12 * weight;
+            ruleText = "4-9 kg: 12 mg/kg";
+            calcStep = `12 mg × ${weight} kg = ${doseMg.toFixed(1)} mg`;
+        } else if (weight >= 9 && weight < 30) {
+            doseMg = 9 * weight;
+            ruleText = "9-30 kg: 9 mg/kg";
+            calcStep = `9 mg × ${weight} kg = ${doseMg.toFixed(1)} mg`;
+        } else {
+            doseMg = 300;
+            ruleText = "≥ 30 kg: 300 mg (คงที่)";
+            calcStep = "300 mg";
+        }
+        
+        const doseMl = isNaN(weight) ? 0 : Math.round((doseMg / 10) * 100) / 100;
+        
+        return {
+            stdDoseObj: {
+                rangeText: isNaN(weight) ? '-' : `${doseMl} ml`,
+                explanation: isNaN(weight) ? 'กรุณาป้อนน้ำหนัก' : `คำนวณตามเกณฑ์ช่วงน้ำหนัก (Zidovudine - ทุก 12 ชม.):\n` +
+                             `• น้ำหนักผู้ป่วย: ${weight} kg (เกณฑ์ช่วงน้ำหนัก: ${ruleText})\n` +
+                             `• คำนวณ mg: ${calcStep}\n` +
+                             `• ความเข้มข้นยา: 10 mg/ml\n` +
+                             `• ขนาดยาต่อครั้ง: ${doseMg.toFixed(1)} mg ÷ 10 mg/ml = ${doseMl} ml`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 7. Favipiravir
+    if (name.includes('favipiravir')) {
+        const loadMg = 70 * weight;
+        const maintMg = 30 * weight;
+        const loadMl = isNaN(weight) ? 0 : Math.round((loadMg / 100) * 10) / 10;
+        const maintMl = isNaN(weight) ? 0 : Math.round((maintMg / 100) * 10) / 10;
+        
+        return {
+            stdDoseObj: {
+                rangeText: isNaN(weight) ? '-' : `L: ${loadMl} ml, M: ${maintMl} ml`,
+                explanation: isNaN(weight) ? 'กรุณาป้อนน้ำหนัก' : `คำนวณตามน้ำหนักตัว (Favipiravir - ทุก 12 ชม.):\n` +
+                             `• น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                             `• Loading (วันแรก): 70 mg/kg/dose = ${loadMg.toFixed(1)} mg (${loadMl} ml) ต่อครั้ง\n` +
+                             `• Maintenance (วันที่ 2-5): 30 mg/kg/dose = ${maintMg.toFixed(1)} mg (${maintMl} ml) ต่อครั้ง\n` +
+                             `• ความเข้มข้นยา: 100 mg/ml`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    // 8. Nevirapine (NVP)
+    if (name.includes('nevirapine') || name.includes('nvp')) {
+        const leadMg = 4 * weight;
+        const maintMg = 7 * weight;
+        const leadMl = isNaN(weight) ? 0 : Math.round((leadMg / 10) * 10) / 10;
+        const maintMl = isNaN(weight) ? 0 : Math.round((maintMg / 10) * 10) / 10;
+        
+        return {
+            stdDoseObj: {
+                rangeText: isNaN(weight) ? '-' : `M: ${maintMl} ml (L: ${leadMl} ml)`,
+                explanation: isNaN(weight) ? 'กรุณาป้อนน้ำหนัก' : `คำนวณตามน้ำหนักตัว (Nevirapine - เกณฑ์ สธ.):\n` +
+                             `• น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                             `• Lead-in (14 วันแรก): 4 mg/kg/day = ${leadMg.toFixed(1)} mg (${leadMl} ml) วันละครั้ง\n` +
+                             `• Maintenance (หลัง 14 วัน): 7 mg/kg/dose = ${maintMg.toFixed(1)} mg (${maintMl} ml) ทุก 12 ชม.\n` +
+                             `• ความเข้มข้นยา: 10 mg/ml`
+            },
+            highDoseObj: null
+        };
+    }
+    
+    return null;
+}
+
 // Calculate Oral Syrup Dose
 function calculateOralDoses(weightVal) {
     const weight = parseFloat(weightVal);
@@ -619,6 +799,36 @@ function calculateOralDoses(weightVal) {
         const stdTd = document.getElementById(`oral-std-${index}`);
         const highTd = document.getElementById(`oral-high-${index}`);
         if (!stdTd || !highTd) return;
+        
+        // Check for custom calculation (some are weight-independent, some are weight-dependent)
+        const specialDose = checkSpecialDrugDose(d, weight, d.concentration);
+        if (specialDose) {
+            const name = d.name.toLowerCase();
+            const isWeightDependent = name.includes('oseltamivir') || name.includes('lactulose') || name.includes('zidovudine') || name.includes('azt') || name.includes('favipiravir') || name.includes('nevirapine') || name.includes('nvp');
+            
+            if (isWeightDependent && (isNaN(weight) || weight <= 0)) {
+                // Show empty placeholder for weight-dependent special drugs
+                const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
+                const rawHigh = d.sanford_high_dose || '-';
+                stdTd.innerHTML = `<span class="dose-badge dose-empty" title="กรุณาป้อนน้ำหนักตัวผู้ป่วยเพื่อคำนวณ\n\nเกณฑ์อ้างอิง:\n${escapeHtml(rawStd)}">-</span>`;
+                highTd.innerHTML = `<span class="dose-badge dose-empty" title="กรุณาป้อนน้ำหนักตัวผู้ป่วยเพื่อคำนวณ\n\nเกณฑ์อ้างอิงสูงสุด:\n${escapeHtml(rawHigh)}">-</span>`;
+            } else {
+                if (specialDose.stdDoseObj) {
+                    stdTd.innerHTML = `<span class="dose-badge dose-std" title="${escapeHtml(specialDose.stdDoseObj.explanation)}">${specialDose.stdDoseObj.rangeText}</span>`;
+                } else {
+                    const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
+                    stdTd.innerHTML = `<span class="dose-badge dose-empty" title="${escapeHtml(rawStd)}">-</span>`;
+                }
+                
+                if (specialDose.highDoseObj) {
+                    highTd.innerHTML = `<span class="dose-badge dose-high" title="${escapeHtml(specialDose.highDoseObj.explanation)}">${specialDose.highDoseObj.rangeText}</span>`;
+                } else {
+                    const rawHigh = d.sanford_high_dose || '-';
+                    highTd.innerHTML = `<span class="dose-badge dose-empty" title="${escapeHtml(rawHigh)}">-</span>`;
+                }
+            }
+            return;
+        }
         
         if (isNaN(weight) || weight <= 0) {
             const rawStd = d.sanford_std_dose || d.ministry_dose || '-';
