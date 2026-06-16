@@ -370,25 +370,60 @@ function calculateQuickDose() {
     let totalVolume = '-';
     
     if (!isNaN(orderedDose) && drawVolume !== '-') {
-        const adminConcNum = parseFloat(selectedQuickDrug.admin_conc_num);
-        if (!isNaN(adminConcNum) && adminConcNum > 0) {
-            totalVolume = orderedDose / adminConcNum;
-            totalVolume = Math.round(totalVolume * 100) / 100;
-            
-            dilVolume = totalVolume - drawVolume;
-            dilVolume = Math.round(dilVolume * 100) / 100;
-            
-            if (dilVolume < 0) {
-                dilVolume = 0;
-                totalVolume = drawVolume;
+        const drugNameLower = selectedQuickDrug.name.toLowerCase();
+        const isCeftriaxoneOrCeftazidime = drugNameLower.includes('ceftriaxone') || drugNameLower.includes('ceftazidime');
+        
+        if (isCeftriaxoneOrCeftazidime) {
+            // Special dilution logic for Ceftriaxone and Ceftazidime based on dose limits:
+            // "น้อยกว่า 1 g เจือจางในสารน้ำ 30-50 ml, มากกว่า 1 g เจือจางในสารน้ำ 60-100 ml"
+            if (orderedDose < 1000) { // < 1 g
+                totalVolume = 50; // Standardize to 50 ml total volume
+                dilVolume = totalVolume - drawVolume;
+                if (dilVolume < 30) {
+                    dilVolume = 30;
+                    totalVolume = drawVolume + dilVolume;
+                } else if (dilVolume > 50) {
+                    dilVolume = 50;
+                    totalVolume = drawVolume + dilVolume;
+                }
+            } else { // >= 1 g
+                totalVolume = 100; // Standardize to 100 ml total volume
+                dilVolume = totalVolume - drawVolume;
+                if (dilVolume < 60) {
+                    dilVolume = 60;
+                    totalVolume = drawVolume + dilVolume;
+                } else if (dilVolume > 100) {
+                    dilVolume = 100;
+                    totalVolume = drawVolume + dilVolume;
+                }
             }
+            
+            totalVolume = Math.round(totalVolume * 100) / 100;
+            dilVolume = Math.round(dilVolume * 100) / 100;
             
             document.getElementById('quick-dil-volume').textContent = dilVolume + ' ml';
             document.getElementById('quick-dil-total').textContent = totalVolume + ' ml';
         } else {
-            // admin_conc_num is '-' or null
-            document.getElementById('quick-dil-volume').textContent = 'เจือจางตามหมายเหตุการพยาบาล';
-            document.getElementById('quick-dil-total').textContent = 'เจือจางตามความเหมาะสม';
+            const adminConcNum = parseFloat(selectedQuickDrug.admin_conc_num);
+            if (!isNaN(adminConcNum) && adminConcNum > 0) {
+                totalVolume = orderedDose / adminConcNum;
+                totalVolume = Math.round(totalVolume * 100) / 100;
+                
+                dilVolume = totalVolume - drawVolume;
+                dilVolume = Math.round(dilVolume * 100) / 100;
+                
+                if (dilVolume < 0) {
+                    dilVolume = 0;
+                    totalVolume = drawVolume;
+                }
+                
+                document.getElementById('quick-dil-volume').textContent = dilVolume + ' ml';
+                document.getElementById('quick-dil-total').textContent = totalVolume + ' ml';
+            } else {
+                // admin_conc_num is '-' or null
+                document.getElementById('quick-dil-volume').textContent = 'เจือจางตามหมายเหตุการพยาบาล';
+                document.getElementById('quick-dil-total').textContent = 'เจือจางตามความเหมาะสม';
+            }
         }
     } else {
         document.getElementById('quick-dil-volume').textContent = '-';
@@ -533,24 +568,58 @@ function calculateIVTableRow(index) {
     drawTd.textContent = drawVol + ' ml';
     
     // Diluent Volume
-    const adminConcNum = parseFloat(d.admin_conc_num);
-    if (!isNaN(adminConcNum) && adminConcNum > 0) {
-        let totalVol = val / adminConcNum;
-        totalVol = Math.round(totalVol * 100) / 100;
-        
-        let dilVol = totalVol - drawVol;
-        dilVol = Math.round(dilVol * 100) / 100;
-        
-        if (dilVol < 0) {
-            dilVol = 0;
-            totalVol = drawVol;
+    const drugNameLower = d.name.toLowerCase();
+    const isCeftriaxoneOrCeftazidime = drugNameLower.includes('ceftriaxone') || drugNameLower.includes('ceftazidime');
+    
+    if (isCeftriaxoneOrCeftazidime) {
+        let totalVol = 0;
+        let dilVol = 0;
+        if (val < 1000) { // < 1 g
+            totalVol = 50;
+            dilVol = totalVol - drawVol;
+            if (dilVol < 30) {
+                dilVol = 30;
+                totalVol = drawVol + dilVol;
+            } else if (dilVol > 50) {
+                dilVol = 50;
+                totalVol = drawVol + dilVol;
+            }
+        } else { // >= 1 g
+            totalVol = 100;
+            dilVol = totalVol - drawVol;
+            if (dilVol < 60) {
+                dilVol = 60;
+                totalVol = drawVol + dilVol;
+            } else if (dilVol > 100) {
+                dilVol = 100;
+                totalVol = drawVol + dilVol;
+            }
         }
+        totalVol = Math.round(totalVol * 100) / 100;
+        dilVol = Math.round(dilVol * 100) / 100;
         
         dilTd.textContent = dilVol + ' ml';
         totalTd.textContent = totalVol + ' ml';
     } else {
-        dilTd.textContent = 'ตามหมายเหตุ';
-        totalTd.textContent = 'ตามหมายเหตุ';
+        const adminConcNum = parseFloat(d.admin_conc_num);
+        if (!isNaN(adminConcNum) && adminConcNum > 0) {
+            let totalVol = val / adminConcNum;
+            totalVol = Math.round(totalVol * 100) / 100;
+            
+            let dilVol = totalVol - drawVol;
+            dilVol = Math.round(dilVol * 100) / 100;
+            
+            if (dilVol < 0) {
+                dilVol = 0;
+                totalVol = drawVol;
+            }
+            
+            dilTd.textContent = dilVol + ' ml';
+            totalTd.textContent = totalVol + ' ml';
+        } else {
+            dilTd.textContent = 'ตามหมายเหตุ';
+            totalTd.textContent = 'ตามหมายเหตุ';
+        }
     }
 }
 
