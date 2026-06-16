@@ -628,29 +628,29 @@ function calculateOralDoses(weightVal) {
         
         // Let's parse Sanford std dose
         // Examples: "25-50 mg/kg/day divied q 8 hr" or "10-15 mg/kg/dose"
-        let stdDoseRange = parseDoseRange(d.sanford_std_dose, weight, conc);
-        let highDoseRange = parseDoseRange(d.sanford_high_dose, weight, conc);
+        let stdDoseObj = parseDoseRange(d.sanford_std_dose, weight, conc);
+        let highDoseObj = parseDoseRange(d.sanford_high_dose, weight, conc);
         
         // Fallback to micromedex std/high if sanford is null
-        if (!stdDoseRange) {
-            stdDoseRange = parseDoseRange(d.ministry_dose, weight, conc);
+        if (!stdDoseObj) {
+            stdDoseObj = parseDoseRange(d.ministry_dose, weight, conc);
         }
         
-        if (stdDoseRange) {
-            stdTd.innerHTML = `<span class="dose-badge dose-std">${stdDoseRange} ml</span>`;
+        if (stdDoseObj) {
+            stdTd.innerHTML = `<span class="dose-badge dose-std" title="${escapeHtml(stdDoseObj.explanation)}">${stdDoseObj.rangeText} ml</span>`;
         } else {
             stdTd.innerHTML = '<span class="dose-badge dose-empty">อ้างอิงตารางเกณฑ์</span>';
         }
         
-        if (highDoseRange) {
-            highTd.innerHTML = `<span class="dose-badge dose-high">${highDoseRange} ml</span>`;
+        if (highDoseObj) {
+            highTd.innerHTML = `<span class="dose-badge dose-high" title="${escapeHtml(highDoseObj.explanation)}">${highDoseObj.rangeText} ml</span>`;
         } else {
             highTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
         }
     });
 }
 
-// Helper function to extract numerical dose and calculate volume in ml
+// Helper function to extract numerical dose and calculate volume in ml with detailed explanation
 function parseDoseRange(doseText, weight, concentration) {
     if (!doseText) return null;
     
@@ -668,6 +668,9 @@ function parseDoseRange(doseText, weight, concentration) {
         else if (doseText.includes('q 12') || doseText.includes('divied q 12') || doseText.includes('divided q 12') || doseText.includes('2 times')) divisions = 2;
     }
     
+    let rangeText = "";
+    let explanation = "";
+    
     if (matchKgDay) {
         const minVal = parseFloat(matchKgDay[1]);
         const maxVal = parseFloat(matchKgDay[3]);
@@ -675,11 +678,33 @@ function parseDoseRange(doseText, weight, concentration) {
         const minMl = (minVal * weight / divisions) / concentration;
         const maxMl = (maxVal * weight / divisions) / concentration;
         
-        return `${Math.round(minMl * 100) / 100} - ${Math.round(maxMl * 100) / 100}`;
+        const minMlR = Math.round(minMl * 100) / 100;
+        const maxMlR = Math.round(maxMl * 100) / 100;
+        
+        rangeText = `${minMlR} - ${maxMlR}`;
+        explanation = `คำนวณจากเกณฑ์: ${minVal}-${maxVal} mg/kg/day\n` +
+                      `น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                      `ความเข้มข้นยา: ${concentration} mg/ml\n` +
+                      `การแบ่งมื้อ: แบ่งให้ทุก ${24/divisions} ชม. (${divisions} ครั้งต่อวัน)\n\n` +
+                      `สูตรคำนวณมิลลิลิตร (ml) ต่อมื้อ:\n` +
+                      `[(ขนาดยา mg/kg/day × น้ำหนัก kg) ÷ ความเข้มข้น mg/ml] ÷ จำนวนมื้อต่อวัน\n\n` +
+                      `ขั้นต่ำ: [(${minVal} × ${weight}) ÷ ${concentration}] ÷ ${divisions} = ${minMlR} ml\n` +
+                      `สูงสุด: [(${maxVal} × ${weight}) ÷ ${concentration}] ÷ ${divisions} = ${maxMlR} ml\n\n` +
+                      `ดังนั้นขนาดยาต่อครั้ง: ${minMlR} - ${maxMlR} ml`;
     } else if (matchSingleKgDay) {
         const val = parseFloat(matchSingleKgDay[1]);
         const ml = (val * weight / divisions) / concentration;
-        return `${Math.round(ml * 100) / 100}`;
+        const mlR = Math.round(ml * 100) / 100;
+        
+        rangeText = `${mlR}`;
+        explanation = `คำนวณจากเกณฑ์: ${val} mg/kg/day\n` +
+                      `น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                      `ความเข้มข้นยา: ${concentration} mg/ml\n` +
+                      `การแบ่งมื้อ: แบ่งให้ทุก ${24/divisions} ชม. (${divisions} ครั้งต่อวัน)\n\n` +
+                      `สูตรคำนวณมิลลิลิตร (ml) ต่อมื้อ:\n` +
+                      `[(ขนาดยา mg/kg/day × น้ำหนัก kg) ÷ ความเข้มข้น mg/ml] ÷ จำนวนมื้อต่อวัน\n\n` +
+                      `คำนวณ: [(${val} × ${weight}) ÷ ${concentration}] ÷ ${divisions} = ${mlR} ml\n\n` +
+                      `ดังนั้นขนาดยาต่อครั้ง: ${mlR} ml`;
     } else if (matchKgDose) {
         const minVal = parseFloat(matchKgDose[1]);
         const maxVal = parseFloat(matchKgDose[3]);
@@ -687,14 +712,36 @@ function parseDoseRange(doseText, weight, concentration) {
         const minMl = (minVal * weight) / concentration;
         const maxMl = (maxVal * weight) / concentration;
         
-        return `${Math.round(minMl * 100) / 100} - ${Math.round(maxMl * 100) / 100}`;
+        const minMlR = Math.round(minMl * 100) / 100;
+        const maxMlR = Math.round(maxMl * 100) / 100;
+        
+        rangeText = `${minMlR} - ${maxMlR}`;
+        explanation = `คำนวณจากเกณฑ์: ${minVal}-${maxVal} mg/kg/dose (ต่อมื้อ)\n` +
+                      `น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                      `ความเข้มข้นยา: ${concentration} mg/ml\n\n` +
+                      `สูตรคำนวณมิลลิลิตร (ml) ต่อมื้อ:\n` +
+                      `(ขนาดยา mg/kg/dose × น้ำหนัก kg) ÷ ความเข้มข้น mg/ml\n\n` +
+                      `ขั้นต่ำ: (${minVal} × ${weight}) ÷ ${concentration} = ${minMlR} ml\n` +
+                      `สูงสุด: (${maxVal} × ${weight}) ÷ ${concentration} = ${maxMlR} ml\n\n` +
+                      `ดังนั้นขนาดยาต่อครั้ง: ${minMlR} - ${maxMlR} ml`;
     } else if (matchSingleKgDose) {
         const val = parseFloat(matchSingleKgDose[1]);
         const ml = (val * weight) / concentration;
-        return `${Math.round(ml * 100) / 100}`;
+        const mlR = Math.round(ml * 100) / 100;
+        
+        rangeText = `${mlR}`;
+        explanation = `คำนวณจากเกณฑ์: ${val} mg/kg/dose (ต่อมื้อ)\n` +
+                      `น้ำหนักผู้ป่วย: ${weight} kg\n` +
+                      `ความเข้มข้นยา: ${concentration} mg/ml\n\n` +
+                      `สูตรคำนวณมิลลิลิตร (ml) ต่อมื้อ:\n` +
+                      `(ขนาดยา mg/kg/dose × น้ำหนัก kg) ÷ ความเข้มข้น mg/ml\n\n` +
+                      `คำนวณ: (${val} × ${weight}) ÷ ${concentration} = ${mlR} ml\n\n` +
+                      `ดังนั้นขนาดยาต่อครั้ง: ${mlR} ml`;
+    } else {
+        return null;
     }
     
-    return null;
+    return { rangeText, explanation };
 }
 
 // Database Editor & Settings (Tab 4)
