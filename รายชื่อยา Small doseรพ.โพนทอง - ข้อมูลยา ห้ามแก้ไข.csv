@@ -1,4 +1,4 @@
-﻿250,ปริมาณตัวทำละลายผงยา (ml),total volume,conc (mg/ml),conc. only ตัวเลข mg/ml,สารน้ำที่ใช้เจือจาง,administration conc.,administration conc. ต่ำสุด only ตัวเลข,administration rate,*หมายเหตุ,dose (from sanford guide),Minimum dose per Kg,Maximum dose per Kg,Divided per day (ครั้ง),ความถี่การให้ยา,อายุ,Icode,,
+250,ปริมาณตัวทำละลายผงยา (ml),total volume,conc (mg/ml),conc. only ตัวเลข mg/ml,สารน้ำที่ใช้เจือจาง,administration conc.,administration conc. ต่ำสุด only ตัวเลข,administration rate,*หมายเหตุ,dose (from sanford guide),Minimum dose per Kg,Maximum dose per Kg,Divided per day (ครั้ง),ความถี่การให้ยา,อายุ,Icode,,
 Adrenaline 1 mg/1ml,0,-,1 mg/ml (1:1000),1,D5W D10W NSS*,infusion max conc 60 mcg/ml,-,,NSS (compativle but administration in saline solution alone is not recomeded),,,,,,,1482378,,
 Calcium gluconate 0.45 mEq/1 ml (10 ml/amp),0,-,0.45 mEq/ml,0.45,D5W D10W NSS,conc bolus 10-50 mg/ml conc continuous infusion 5.8-10 mg/ml,5.8,"max IV drip 100 mg/min, max continuos drip neonate (<1 month): 17-33 mg/kg/hr, >1 month - 17 year: 8-13 mg/kg/hr ",,,,,,,,1481100,,
 Ciprofloxacin 400 mg/200 ml,0,-,2 mg/ml,2,"D5W D10W NSS 
@@ -6,7 +6,7 @@ D5N/2 D5N/4 LRS",0.5-2 mg/ml ,0.5,IV drip over 60 min,,20-30 mg/kg/day (divided 
 Dexamethasone 4mg/1ml,0,-,4 mg/ml,4,D5W D10W NSS,undiluted or diluted to 0.1-1 mg/ml,0.1,-,,,,,,,,1481062,,
 DIAZEPAM 10 mg/ 2 ml,0,-,5 mg/ml,5,,,,,,"sedation: 0.05-0.1 mg/kg/dose
 seizures 0.2-0.3 mg/kg",0.2,0.3,,,,1481864,,
-Gentamicin 80 mg/2ml,0,-,40 mg/ml,40,D5W D10W NSS,1 mg/ml or 2 mg/ml or 10 mg/ml or 10 mg/ml,1,IV drip in 30 min,,"- 2.5 (divided q 8 hr)
+Gentamicin 80 mg/2ml,0,-,40 mg/ml,40,D5W D10W NSS,1 mg/ml or 2 mg/ml or 10 mg/ml or 10 mg/ml,2,IV drip in 30 min,,"- 2.5 (divided q 8 hr)
 - 5-7 mg/kg/day) OD
 - max 105 mg/day",5,7,3,ทุก 8 ชั่วโมง,,1482374,,
 Levetiracetam 100 mg/1ml (5 ml/vial),0,-,100 mg/1ml,100,D5W NSS LRS,max 15 mg/ml,15,IV drip over 15 min,,,,,,,,1660004,,
