@@ -592,11 +592,11 @@ function renderOralTable() {
         tr.id = `oral-row-${index}`;
         const concDisplay = (parseFloat(d.concentration) > 0) ? `${d.concentration} mg/ml` : '-';
         tr.innerHTML = `
-            <td><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
+            <td class="text-center"><small class="icode-badge">${escapeHtml(d.icode || '-')}</small></td>
             <td><strong>${escapeHtml(d.name)}</strong></td>
-            <td>${concDisplay}</td>
-            <td id="oral-std-${index}" class="font-large">-</td>
-            <td id="oral-high-${index}" class="font-large">-</td>
+            <td class="text-center">${concDisplay}</td>
+            <td id="oral-std-${index}" class="text-center"><span class="dose-badge dose-empty">-</span></td>
+            <td id="oral-high-${index}" class="text-center"><span class="dose-badge dose-empty">-</span></td>
             <td><small>Std: ${d.sanford_std_dose || '-'}<br>High: ${d.sanford_high_dose || '-'}</small></td>
             <td><small>${d.micromedex_std_dose || '-'}<br><span class="warning-text">${d.age_limit || ''}</span></small></td>
         `;
@@ -613,16 +613,16 @@ function calculateOralDoses(weightVal) {
         const highTd = document.getElementById(`oral-high-${index}`);
         
         if (isNaN(weight) || weight <= 0) {
-            stdTd.textContent = '-';
-            highTd.textContent = '-';
+            stdTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
+            highTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
             return;
         }
         
         const conc = parseFloat(d.concentration);
         if (isNaN(conc)) {
             // Some drug concentration might be a text (e.g. Co-Amoxiclav amoxy content)
-            stdTd.textContent = 'ดูความเข้มข้นสารออกฤทธิ์';
-            highTd.textContent = 'ดูความเข้มข้นสารออกฤทธิ์';
+            stdTd.innerHTML = '<span class="dose-badge dose-empty" style="font-size: 0.75rem;">ดูความเข้มข้นสารออกฤทธิ์</span>';
+            highTd.innerHTML = '<span class="dose-badge dose-empty" style="font-size: 0.75rem;">ดูความเข้มข้นสารออกฤทธิ์</span>';
             return;
         }
         
@@ -636,8 +636,17 @@ function calculateOralDoses(weightVal) {
             stdDoseRange = parseDoseRange(d.ministry_dose, weight, conc);
         }
         
-        stdTd.textContent = stdDoseRange ? stdDoseRange + ' ml' : 'อ้างอิงตารางเกณฑ์';
-        highTd.textContent = highDoseRange ? highDoseRange + ' ml' : '-';
+        if (stdDoseRange) {
+            stdTd.innerHTML = `<span class="dose-badge dose-std">${stdDoseRange} ml</span>`;
+        } else {
+            stdTd.innerHTML = '<span class="dose-badge dose-empty">อ้างอิงตารางเกณฑ์</span>';
+        }
+        
+        if (highDoseRange) {
+            highTd.innerHTML = `<span class="dose-badge dose-high">${highDoseRange} ml</span>`;
+        } else {
+            highTd.innerHTML = '<span class="dose-badge dose-empty">-</span>';
+        }
     });
 }
 
