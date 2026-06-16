@@ -117,8 +117,19 @@ function showNotification(message, type = 'info') {
 
 // Initialize Database
 async function initDatabase() {
+    const DB_VERSION = '2026-06-16-v3';
     let localIV = localStorage.getItem('smalldose_iv_drugs');
     let localOral = localStorage.getItem('smalldose_oral_drugs');
+    const cachedDbVersion = localStorage.getItem('smalldose_db_version');
+    
+    // Auto-migration: force invalidate localStorage cache if database version mismatches
+    if (cachedDbVersion !== DB_VERSION) {
+        localStorage.removeItem('smalldose_iv_drugs');
+        localStorage.removeItem('smalldose_oral_drugs');
+        localStorage.setItem('smalldose_db_version', DB_VERSION);
+        localIV = null;
+        localOral = null;
+    }
     
     // Auto-migration: if cached data does not contain the new Oseltamivir (1680014) OR has the old Amoxy-clave typo, force-clear the cache
     if (localOral && localIV) {
